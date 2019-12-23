@@ -108,6 +108,7 @@ class annotation_manager():
         image_names = glob.glob(dir_name + "/*.jpg")
         image_names.extend(glob.glob(dir_name + "/*.png"))
         image_names.extend(glob.glob(dir_name + "/*.bmp"))
+        image_names.extend(glob.glob(dir_name + "/*.tif"))
         self.image_names = [os.path.basename(x) for x in image_names]
 
         for name in self.image_names:
