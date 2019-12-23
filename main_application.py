@@ -310,7 +310,6 @@ class Ui_MainWindow(object):
             close = close.exec()
 
             if close == QtWidgets.QMessageBox.Yes:
-                self.scene.update_annotations()
                 self.scene.saved = True
                 self.annotation_manager.save_annotations()
                 self.main_window.statusBar().showMessage("Saving dataset to: " + self.annotation_manager.dir_name)

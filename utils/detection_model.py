@@ -185,16 +185,16 @@ class detection_model():
                     self.det_signals.progress_signal.emit(int(((epoch*iterations+it) / (num_epochs*iterations)) * 100))
                     self.det_signals.epoch_signal.emit(epoch)
                     self.det_signals.loss_signal.emit(float(np.mean(loss_train)))
+
+                self.model = model
+                model.save(model_name)
                 if self.stop_training:
                     break
 
 
-                self.model = model
-                model.save(model_name)
         self.done_training = True
         print("Stopped training..")
         self.det_signals.progress_signal.emit(100)
-        K.clear_session()
 
     def split_and_predict(self,p_x,p_y,image):
         parts_x = p_x*2 - 1
@@ -215,7 +215,7 @@ class detection_model():
         ret, thresh = cv2.threshold(uint_mask, threshold, 255, 0)
         #thresh = cv2.dilate(thresh, np.ones((5,5)), iterations=2)
         dist_transform = cv2.distanceTransform(thresh.astype(np.uint8), cv2.DIST_L2, cv2.DIST_MASK_PRECISE)
-        skeleton = non_max_suppression_reverse(dist_transform, 11, gauss_size=11)
+        skeleton = non_max_suppression_reverse(dist_transform, 11)
         row_ind, col_ind = np.where(skeleton > 0)
         boxes = np.array(
             [[x[1]-dist_transform[x[0],x[1]]*1, x[0]-dist_transform[x[0],x[1]]*1, 2 * int(dist_transform[x[0], x[1]]), 2 * int(dist_transform[x[0], x[1]])] for x in

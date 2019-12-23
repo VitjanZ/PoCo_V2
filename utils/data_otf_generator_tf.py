@@ -135,6 +135,7 @@ class dataset_generator():
         image_names = glob.glob(self.dir_name+"/training_data/images/images/*.jpg")
         image_names.extend(glob.glob(self.dir_name+"/training_data/images/images/*.png"))
         image_names.extend(glob.glob(self.dir_name+"/training_data/images/images/*.bmp"))
+        image_names.extend(glob.glob(self.dir_name+"/training_data/images/images/*.tif"))
         sample_img = cv2.imread(image_names[0])
         target_shape = (sample_img.shape[0], sample_img.shape[1])
 
