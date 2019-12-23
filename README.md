@@ -1,4 +1,4 @@
-# PoCo Annotator
+# PoCo-V2 (Polyp Counter)
 
 <p align="center">
   <img src="./readme_res/splash.png" alt="splash png" />
@@ -9,7 +9,7 @@
 Install python dependencies and CUDA+cuDNN.
 
 ### Dependencies
-Using pip or conda install:
+Using pip install:
 
 Python packages and tested versions
 * tensorflow-gpu (1.14.0) and up, but not 2.0
@@ -23,7 +23,7 @@ Install CUDA and cuDNN:
 
 
 ## Interface and Features:
-
+PoCo-v2 was developed for use in annotating and detecting 
 <p align="center">
   <img src="./readme_res/interface.png" alt="interface png" />
 </p>
@@ -150,3 +150,18 @@ After the model has been selected, click on the Predict button to run the detect
 about the progress of the detection process. After the detection has been completed, the detected objects will be 
 displayed as annotations on the images. You can save the detections using the save function (Ctrl+S).
 
+# Reference
+If you use this tool, please cite the following paper:
+```
+@article{ZAVRTANIK2020103399,
+title = "A segmentation-based approach for polyp counting in the wild",
+journal = "Engineering Applications of Artificial Intelligence",
+volume = "88",
+pages = "103399",
+year = "2020",
+issn = "0952-1976",
+doi = "https://doi.org/10.1016/j.engappai.2019.103399",
+url = "http://www.sciencedirect.com/science/article/pii/S095219761930315X",
+author = "Vitjan Zavrtanik and Martin Vodopivec and Matej Kristan"
+}
+```
