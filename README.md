@@ -21,6 +21,8 @@ Python packages and tested versions
 Install CUDA and cuDNN:
  * CUDA 10.1 + cuDNN 7.6.5
 
+### Windows Build
+A prebuilt version for Windows is available [here](https://drive.google.com/file/d/1XgNJTviLW2RtlKgaVY43PoU1t3EAgoDE)
 
 ## Interface and Features:
 PoCo-v2 was developed for use in annotating and detecting 
