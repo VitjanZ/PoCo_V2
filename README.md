@@ -24,6 +24,8 @@ Install CUDA and cuDNN:
 ### Windows Build
 A prebuilt version for Windows is available:
 * [GPU version](https://drive.google.com/file/d/1XgNJTviLW2RtlKgaVY43PoU1t3EAgoDE)
+
+
 If a GPU is not available on your system:
 * [CPU version](https://drive.google.com/open?id=1ddzgBy9tcwkt361P7Y4rQqlPCKG1gunG)
 
