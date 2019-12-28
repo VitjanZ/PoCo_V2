@@ -23,8 +23,9 @@ Install CUDA and cuDNN:
 
 ### Windows Build
 A prebuilt version for Windows is available:
-* GPU version [here](https://drive.google.com/file/d/1XgNJTviLW2RtlKgaVY43PoU1t3EAgoDE)
-* CPU version [here](https://drive.google.com/open?id=1ddzgBy9tcwkt361P7Y4rQqlPCKG1gunG)
+* [GPU version](https://drive.google.com/file/d/1XgNJTviLW2RtlKgaVY43PoU1t3EAgoDE)
+If a GPU is not available on your system:
+* [CPU version](https://drive.google.com/open?id=1ddzgBy9tcwkt361P7Y4rQqlPCKG1gunG)
 
 ## Interface and Features:
 PoCo-v2 was developed for use in annotating and detecting 
