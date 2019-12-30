@@ -31,7 +31,7 @@ If a GPU is not available on your system:
 * [CPU version](https://drive.google.com/open?id=1ddzgBy9tcwkt361P7Y4rQqlPCKG1gunG)
 
 ## Quick Start Demo
-###Inference
+### Inference
 * Download the test data set from [here](https://drive.google.com/open?id=1IIU-TbTEHuxxtLbrjQGUZ6oIe6wcx2gD) and 
 extract it.
 * Download the pretrained model from [here](https://drive.google.com/open?id=1kmRR3UttSq0T0GTdtIVEwj0JimZZXHcj)
