@@ -6,7 +6,8 @@
 
 ## Install
 
-Install python dependencies and CUDA+cuDNN.
+To use the code install python dependencies and CUDA+cuDNN. A prebuilt Windows 
+application is also available.
 
 ### Dependencies
 Using pip install:
@@ -29,8 +30,72 @@ A prebuilt version for Windows is available:
 If a GPU is not available on your system:
 * [CPU version](https://drive.google.com/open?id=1ddzgBy9tcwkt361P7Y4rQqlPCKG1gunG)
 
+## Quick Start Demo
+###Inference
+* Download the test data set from [here](https://drive.google.com/open?id=1IIU-TbTEHuxxtLbrjQGUZ6oIe6wcx2gD) and 
+extract it.
+* Download the pretrained model from [here](https://drive.google.com/open?id=1kmRR3UttSq0T0GTdtIVEwj0JimZZXHcj)
+* Load the images by clicking the "Load Dataset" button and selecting the folder containing the extracted images.
+* Run the inference by clicking the "Predict with model" button.
+* Once the dialog opens select the pretrained model by clicking the "Change model" button in the dialog and selecting the
+ model file.
+* Click the "Predict" button in the dialog and wait for the inference to finish. The dialog window 
+will close automatically when the process is finished. Please note that this may take 
+some time when run on the CPU.
+* The detections will be displayed in the main window, with the number of detections displayed on the right side of the
+ interface.
+
+### Annotation and Training
+* Download the preannotated training data set from [here](https://drive.google.com/open?id=15vDh1aYqUhLWAymR-Ija02-UJrt7NTGt) and 
+extract it.
+* Download the test data set from [here](https://drive.google.com/open?id=1IIU-TbTEHuxxtLbrjQGUZ6oIe6wcx2gD) and 
+extract it.
+* Load the images by clicking the "Load Dataset" button and selecting the folder containing the preannotated extracted images.
+* The annotations will be displayed in the main image and you can navigate between the images by clicking the image 
+names on the image list on the right side of the interface.
+* First save the training data using the Ctrl+S shortcut or by clicking the "Save Training Dataset" button and wait 
+for the saving process to finish.
+* Train on the data using the "Train on current dataset" button. Once the dialog opens
+click the "Create a new model" button and pick a location where your trained model will be saved.
+* Click "Start training" and the training will begin. Please note that the training process can 
+take a long time and may be prohibitively long if a powerful GPU is not available. 
+* Once the training stops or you stop the training using the stop training button, the model will be 
+saved to the chosen location.
+* Open the test dataset by again selecting a new folder using the "Load Dataset" button. You can also run the model 
+on the currently opened dataset in which case the model will be run only on regions of the images where the annotations 
+aren't present. 
+* Click the "Predict with model" button and wait for the dialog to open. Pick the model you just trained using the 
+"Change Dataset" button. Then click the Predict button to start the 
+inference. Wait until the process is finished and the detections will be displayed on screen.
+
+###Training on your own data
+* Place your images in a single folder.
+* Load the images by clicking the "Load Dataset" button and selecting the folder containing the images.
+* You can navigate between the images by clicking the image 
+names on the image list on the right side of the interface.
+* Annotate the images using the annotation tools. As this can take a long time it is advisable to save 
+the dataset often during annotation.
+* First save the training data using the Ctrl+S shortcut or by clicking the "Save Training Dataset" button and wait 
+for the saving process to finish.
+* Train on the data using the "Train on current dataset" button. Once the dialog opens
+click the "Create a new model" button and pick a location where your trained model will be saved.
+* Click "Start training" and the training will begin. Please note that the training process can 
+take a long time and may be prohibitively long if a powerful GPU is not available. 
+* Once the training stops or you stop the training using the stop training button, the model will be 
+saved to the chosen location.
+* Place your test dataset images in a separate folder.
+* Open the test dataset by selecting the test folder using the "Load Dataset" button. You can also run the model 
+on the currently opened dataset in which case the model will be run only on regions of the images where the annotations 
+aren't present. 
+* Click the "Predict with model" button and wait for the dialog to open. Pick the model you just trained using the 
+"Change Dataset" button. Then click the Predict button to start the 
+inference. Wait until the process is finished and the detections will be displayed on screen.
+* Save the detections using the Ctrl+S shortcut.
+
 ## Interface and Features:
-PoCo-v2 was developed for use in annotating and detecting 
+PoCo-v2 was developed for use in annotating and detecting. Here you can find more detailed instructions for the use of 
+each individual annotation tool and interface feature.
+
 <p align="center">
   <img src="./readme_res/interface.png" alt="interface png" />
 </p>
