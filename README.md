@@ -68,7 +68,7 @@ aren't present.
 "Change Dataset" button. Then click the Predict button to start the 
 inference. Wait until the process is finished and the detections will be displayed on screen.
 
-###Training on your own data
+### Training on your own data
 * Place your images in a single folder.
 * Load the images by clicking the "Load Dataset" button and selecting the folder containing the images.
 * You can navigate between the images by clicking the image 
