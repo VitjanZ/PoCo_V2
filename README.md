@@ -10,7 +10,7 @@ To use the code install python dependencies and CUDA+cuDNN. A prebuilt Windows
 application is also available.
 
 ### Dependencies
-Using pip install:
+Using pip/conda:
 
 Python packages and tested versions
 * tensorflow-gpu (1.14.0) and up, but not 2.0
@@ -22,12 +22,21 @@ Python packages and tested versions
 Install CUDA and cuDNN:
  * CUDA 10.1 + cuDNN 7.6.5
 
+Environment:
+```
+conda create --name poco python=3.7
+conda activate poco
+conda install -c conda-forge cudatoolkit=10.0 cudnn=7.6.0
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/
+python3.7 -m pip install tensorflow_gpu=1.14.0 keras==2.3.1 opencv-python==4.1.1.26 PyQt5==5.13.2 h5py==2.10.0
+```
+
 ### Windows Build
-A prebuilt version for Windows is available:
+A prebuilt version for Windows is available (1 commit behind):
 * [GPU version](https://drive.google.com/file/d/1XgNJTviLW2RtlKgaVY43PoU1t3EAgoDE)
 
 
-If a GPU is not available on your system:
+If a GPU is not available on your system  (1 commit behind):
 * [CPU version](https://drive.google.com/open?id=1ddzgBy9tcwkt361P7Y4rQqlPCKG1gunG)
 
 ## Quick Start Demo
@@ -169,6 +178,10 @@ that part of the image will be taken into account when training or detecting obj
 <p align="center">
   <img src="./readme_res/poly.gif" alt="negative gif" />
 </p>
+
+#### Scale Tool
+The scale tool enables the annotation of real-life distance on the image with a line. If annotated, this enables the 
+approximate calculation of the object density. The user should annotate the distance of 1cm.
 
 
 #### Saving Data

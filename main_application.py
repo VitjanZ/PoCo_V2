@@ -36,11 +36,20 @@ class Ui_MainWindow(object):
         self.number_annotations_label.setObjectName("number_annotations_label")
         self.number_annotations_label.setStyleSheet("color:rgb(200,200,210)")
 
+        self.poly_surface_label = QtWidgets.QLabel(self.centralwidget)
+        self.poly_surface_label.setObjectName("poly_surface_label")
+        self.poly_surface_label.setStyleSheet("color:rgb(200,200,210)")
+
+        self.object_density_label = QtWidgets.QLabel(self.centralwidget)
+        self.object_density_label.setObjectName("object_density_label")
+        self.object_density_label.setStyleSheet("color:rgb(200,200,210)")
+
+
         self.annotation_manager = annotation_manager(self.centralwidget)
 
         self.main_image_graphics_view = ImageDisplayView(self.centralwidget)
-        self.scene = GraphicsScene(self.annotation_manager, self.number_annotations_label,
-                                   parent=self.main_image_graphics_view)
+        self.scene = GraphicsScene(self.annotation_manager, self.number_annotations_label, self.poly_surface_label,
+                                   self.object_density_label, parent=self.main_image_graphics_view)
         self.scene.curr_view = self.main_image_graphics_view
 
         self.main_image_graphics_view.setScene(self.scene)
@@ -141,10 +150,21 @@ class Ui_MainWindow(object):
         #"""
 
 
+        self.scale_tool = QtWidgets.QPushButton(self.centralwidget)
+        self.scale_tool.setCheckable(True)
+        self.scale_tool.setIcon(QtGui.QIcon('./resources/icons/scale.png'))
+        self.scale_tool.setIconSize(QtCore.QSize(30, 30))
+        self.scale_tool.setFlat(True)
+        self.scale_tool.setToolTip("Marks the distance of 1cm on the image.")
+        self.scale_tool.clicked.connect(self.pick_scale_tool_click)
+
+
+
         self.horizontal_layout_tools.addWidget(self.annotation_plus_tool)
         self.horizontal_layout_tools.addWidget(self.annotation_negative_tool)
         self.horizontal_layout_tools.addWidget(self.annotation_minus_tool)
         self.horizontal_layout_tools.addWidget(self.polygon_tool)
+        self.horizontal_layout_tools.addWidget(self.scale_tool)
 
         self.verticalLayout_2.addLayout(self.horizontal_layout_tools)
         bot_frame = QtWidgets.QFrame()
@@ -209,6 +229,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.selected_file_label)
 
         self.verticalLayout_2.addWidget(self.number_annotations_label)
+        self.verticalLayout_2.addWidget(self.poly_surface_label)
+        self.verticalLayout_2.addWidget(self.object_density_label)
 
         bot_frame = QtWidgets.QFrame()
         bot_frame.setFrameShape(QtWidgets.QFrame.HLine)
@@ -353,9 +375,9 @@ class Ui_MainWindow(object):
 
     def handle_tool_click(self, tool):
         tools = [self.annotation_plus_tool, self.annotation_minus_tool, self.annotation_negative_tool,
-                 self.polygon_tool]
+                 self.polygon_tool, self.scale_tool]
         self.scene.picked_tool = tool
-        if tool != 1 and tool != 4:
+        if tool != 1:
             # if tool not annotation minus tool
             self.brush_tool_size_slider.setVisible(False)
             self.brush_tool_options_label.setVisible(False)
@@ -381,6 +403,9 @@ class Ui_MainWindow(object):
 
     def pick_poly_tool_click(self):
         self.handle_tool_click(3)
+
+    def pick_scale_tool_click(self):
+        self.handle_tool_click(4)
 
     def annotation_negative_tool_click(self):
         self.handle_tool_click(2)
@@ -440,6 +465,8 @@ class Ui_MainWindow(object):
 
         self.selected_file_label.setText(_translate("MainWindow", "Selected file: None"))
         self.number_annotations_label.setText(_translate("MainWindow", "Number of annotations: 0"))
+        self.poly_surface_label.setText(_translate("MainWindow", "Surface of polygon (pixels): 0"))
+        self.object_density_label.setText(_translate("MainWindow", "Density of objects (num/pixels): 0"))
 
 
 class MainWindow(QtWidgets.QMainWindow):

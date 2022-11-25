@@ -1,19 +1,22 @@
 from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, \
-    QGraphicsPolygonItem
+    QGraphicsPolygonItem, QGraphicsLineItem
 from PyQt5.QtGui import QColor, QFont, QCursor, QImage, QPixmap, QPolygonF, QPen, QBrush
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import Qt, QPointF, QLineF
 import numpy as np
 from utils.removal_tool import RemovalTool
 from utils.annotation_tool import AnnotationTool
 from .polygon_point import PolygonPointItem
+from .scale_point import ScalePointItem
 from .annotation_graphics_items import AnnotationItem
 
 class GraphicsScene(QGraphicsScene):
-    def __init__(self, annotation_manager, count_label, parent=None):
+    def __init__(self, annotation_manager, count_label, poly_label, density_label, parent=None):
         super(GraphicsScene, self).__init__(parent)
         self.annotations = set()
         self.negative_annotations = set()
         self.roi_point_items = set()
+        self.scale_point_items = []
+        self.polygon_surface = 0.0
 
 
         self.removal_tool = RemovalTool(annotation_manager, self)
@@ -26,11 +29,14 @@ class GraphicsScene(QGraphicsScene):
         self.curr_image = None
         self.annotation_manager = annotation_manager
         self.count_label = count_label
+        self.poly_label = poly_label
+        self.density_label = density_label
         self.saved = True
         self.enabled = False
 
         self.polygon = None
         self.roi_polygon = None
+        self.scale_line = None
         self.picked_tool = 0
         self.removal_circle_item = None
         self.removal_circle_radius = 100
@@ -57,6 +63,7 @@ class GraphicsScene(QGraphicsScene):
 
         self.polygon = None
         self.roi_polygon = None
+        self.scale_line = None
         self.removal_circle_item = None
         self.annotation_undo_stack = []
         self.action_undo_stack = []
@@ -80,9 +87,17 @@ class GraphicsScene(QGraphicsScene):
             self.roi_point_items.add(tmp_annot)
             self.addItem(tmp_annot)
 
+        for a in self.annotation_manager.scale_points[self.image_name]:
+            tmp_annot = ScalePointItem(self, (a[0], a[1]))
+            self.scale_point_items.append(tmp_annot)
+            self.addItem(tmp_annot)
+
+
         self.annotation_tool.draw_convex_hull()
+        self.draw_scale_line()
         self.draw_roi_polygon()
         self.count_label.setText("Number of annotations: " + str(len(self.annotations)))
+
         self.update()
 
     def change_image(self, image_path, image_name):
@@ -91,9 +106,11 @@ class GraphicsScene(QGraphicsScene):
         self.annotations = set()
         self.negative_annotations = set()
         self.roi_point_items = set()
+        self.scale_point_items = []
 
         self.polygon = None
         self.roi_polygon = None
+        self.scale_line = None
         self.removal_circle_item = None
         self.annotation_undo_stack = []
         self.action_undo_stack = []
@@ -120,15 +137,25 @@ class GraphicsScene(QGraphicsScene):
             self.roi_point_items.add(tmp_annot)
             self.addItem(tmp_annot)
 
+        for a in self.annotation_manager.scale_points[image_name]:
+            tmp_annot = ScalePointItem(self, (a[0], a[1]))
+            self.scale_point_items.append(tmp_annot)
+            self.addItem(tmp_annot)
+
+
         self.image_name = image_name
         self.count_label.setText("Number of annotations: " + str(len(self.annotations)))
         self.annotation_tool.draw_convex_hull()
         self.draw_roi_polygon()
+        self.draw_scale_line()
         self.update()
 
 
     def get_annotations(self):
         return self.annotations
+
+    def get_polygon_surface(self, x, y):
+        return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
     def draw_roi_polygon(self):
         if len(self.annotation_manager.roi_points[self.image_name]) > 2:
@@ -143,10 +170,61 @@ class GraphicsScene(QGraphicsScene):
             self.roi_polygon = QGraphicsPolygonItem(polygon)
             self.roi_polygon.setPen(pen)
             self.addItem(self.roi_polygon)
+
+            polygon_points = np.array(self.annotation_manager.roi_points[self.image_name])
+            polygon_surface = self.get_polygon_surface(polygon_points[:,0], polygon_points[:,1])
+            self.polygon_surface = polygon_surface
+            if len(self.annotation_manager.scale_points[self.image_name]) == 2:
+                x1, y1 = self.annotation_manager.scale_points[self.image_name][0]
+                x2, y2 = self.annotation_manager.scale_points[self.image_name][1]
+                line_length = ((x1-x2)**2 + (y1-y2)**2)**0.5
+                polygon_surface_cm = polygon_surface / (line_length**2)
+                self.poly_label.setText("Surface of polygon (cm): " + str(polygon_surface_cm))
+                self.polygon_surface = polygon_surface_cm
+            else:
+                self.poly_label.setText("Surface of polygon (pixels): " + str(polygon_surface))
+            density = np.round(len(self.annotations) / (self.polygon_surface+1e-16),6)
+            self.density_label.setText("Object density: " + str(density))
+
+
+
         else:
             if self.roi_polygon != None:
                 self.removeItem(self.roi_polygon)
                 self.roi_polygon = None
+            self.density_label.setText("Object density: None")
+
+    def draw_scale_line(self):
+        if len(self.annotation_manager.scale_points[self.image_name]) == 2:
+            if self.scale_line != None:
+                self.removeItem(self.scale_line)
+                self.scale_line = None
+            brush = QBrush(QColor("#55bcc2"))
+            pen = QPen(brush, 7)
+
+            x1,y1 = self.annotation_manager.scale_points[self.image_name][0]
+            x2,y2 = self.annotation_manager.scale_points[self.image_name][1]
+
+            sc_line = QLineF(x1,y1,x2,y2)
+            self.scale_line = QGraphicsLineItem(sc_line)
+            self.scale_line.setPen(pen)
+            self.addItem(self.scale_line)
+            if len(self.annotation_manager.roi_points[self.image_name]) > 2:
+                polygon_points = np.array(self.annotation_manager.roi_points[self.image_name])
+                polygon_surface = self.get_polygon_surface(polygon_points[:,0], polygon_points[:,1])
+                line_length = ((x1-x2)**2 + (y1-y2)**2)**0.5
+                polygon_surface_cm = np.round(polygon_surface / (line_length**2),3)
+                self.poly_label.setText("Surface of polygon (cm): " + str(polygon_surface_cm))
+                self.polygon_surface = polygon_surface_cm
+                density = np.round(len(self.annotations) / (self.polygon_surface+1e-16),6)
+                self.density_label.setText("Object density: " + str(density))
+
+
+        else:
+            if self.scale_line != None:
+                self.removeItem(self.scale_line)
+                self.scale_line = None
+
 
     def keyPressEvent(self, QKeyEvent):
         # Changes the cursor icon when deleting
@@ -169,6 +247,9 @@ class GraphicsScene(QGraphicsScene):
         if num_removed > 0:
             self.annotation_manager.annotations_changed[self.image_name] = True
             self.count_label.setText("Number of annotations: " + str(len(self.annotations)))
+            if self.polygon_surface > 0.0:
+                density = np.round(len(self.annotations) / (self.polygon_surface+1e-16),6)
+                self.density_label.setText("Object density: " + str(density))
             self.annotation_tool.draw_convex_hull()
             self.saved = False
 
@@ -177,6 +258,9 @@ class GraphicsScene(QGraphicsScene):
         if removed:
             self.annotation_manager.annotations_changed[self.image_name] = True
             self.count_label.setText("Number of annotations: " + str(len(self.annotations)))
+            if self.polygon_surface > 0.0:
+                density = np.round(len(self.annotations) / (self.polygon_surface+1e-16),6)
+                self.density_label.setText("Object density: " + str(density))
             self.annotation_tool.draw_convex_hull()
             self.saved = False
 
@@ -185,6 +269,9 @@ class GraphicsScene(QGraphicsScene):
         if removed:
             self.annotation_manager.annotations_changed[self.image_name] = True
             self.count_label.setText("Number of annotations: " + str(len(self.annotations)))
+            if self.polygon_surface > 0.0:
+                density = np.round(len(self.annotations) / (self.polygon_surface+1e-16),6)
+                self.density_label.setText("Object density: " + str(density))
             self.saved = False
             self.annotation_tool.draw_convex_hull()
 
@@ -221,6 +308,17 @@ class GraphicsScene(QGraphicsScene):
             self.roi_point_items.add(tmp_annot)
             self.annotation_manager.roi_points[self.image_name].append((pos.x(),pos.y()))
             self.draw_roi_polygon()
+        elif self.picked_tool == 4 and QMouseEvent.button() == 1 and modifiers != Qt.ControlModifier:
+            print("scale tool pressed")
+            tmp_annot = ScalePointItem(self, (pos.x(),pos.y()))
+            self.currently_drawing = False
+            self.addItem(tmp_annot)
+            self.scale_point_items.append(tmp_annot)
+            if len(self.scale_point_items) == 3:
+                self.scale_point_items[0].handle_removal_event()
+                self.scale_point_items = self.scale_point_items[1:]
+            self.annotation_manager.scale_points[self.image_name].append((pos.x(),pos.y()))
+            self.draw_scale_line()
 
         self.update()
 
@@ -265,6 +363,10 @@ class GraphicsScene(QGraphicsScene):
                     self.annotation_tool.add_annotation(pos, [self.start_x, self.start_y, self.end_x, self.end_y])
                 # remove in progress annotation
                 self.annotation_tool.remove_progress_annotation()
+                if self.polygon_surface > 0.0:
+                    density = np.round(len(self.annotations) / (self.polygon_surface + 1e-16), 6)
+                    self.density_label.setText("Object density: " + str(density))
+
 
         # Save remove action to undo stack
         elif self.picked_tool == 1 and QMouseEvent.button() == 1:

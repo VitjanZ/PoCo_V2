@@ -11,6 +11,7 @@ class annotation_manager():
         self.annotations_rect = {}
         self.negative_annotations_rect = {}
         self.roi_points = {}
+        self.scale_points = {}
         self.annotations_changed = {}
         self.predicted_annotations_rect = {}
         self.image_shapes = {}
@@ -69,6 +70,17 @@ class annotation_manager():
             f.close()
 
         tmp_arr = []
+        for key in self.scale_points:
+            for annot in self.scale_points[key]:
+                x, y = annot
+                tmp_arr.append([key, x, y])
+
+        with open(self.dir_name + '/scale_points.csv', 'w+') as f:
+            writer = csv.writer(f, delimiter=',', lineterminator='\n')
+            writer.writerows(tmp_arr)
+            f.close()
+
+        tmp_arr = []
         for key in self.roi_points:
             for annot in self.roi_points[key]:
                 x, y = annot
@@ -96,6 +108,26 @@ class annotation_manager():
                     with open(self.dir_name + '/' + image_base_name + '_gt_poly.csv', 'w+') as f:
                         writer = csv.writer(f, delimiter=',', lineterminator='\n')
                         writer.writerows(self.roi_points[k])
+                        f.close()
+
+                if len(self.scale_points[k]) == 2:
+                    with open(self.dir_name + '/' + image_base_name + '_scale.csv', 'w+') as f:
+                        writer = csv.writer(f, delimiter=',', lineterminator='\n')
+                        writer.writerows(self.scale_points[k])
+                        f.close()
+
+                if len(self.scale_points[k]) == 2 and len(self.roi_points[k]) != 0:
+                    x1, y1 = self.scale_points[k][0]
+                    x2, y2 = self.scale_points[k][1]
+                    line_length = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+                    polygon_points = np.array(self.roi_points[k])
+                    x = polygon_points[:, 0]
+                    y = polygon_points[:, 1]
+                    polygon_surface = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+                    polygon_surface_cm = polygon_surface / (line_length ** 2)
+                    density = np.round(len(self.annotations_rect[k]) / (polygon_surface_cm + 1e-16), 6)
+                    with open(self.dir_name + '/' + image_base_name + '_density.csv', 'w+') as f:
+                        f.write(str(density))
                         f.close()
 
     def load_annotations(self, dir_name):
@@ -135,9 +167,22 @@ class annotation_manager():
                         self.roi_points[name].append((float(x), float(y)))
                     f.close()
 
+            if os.path.exists(dir_name + '/' + image_base_name + '_scale.csv'):
+                with open(dir_name + '/' + image_base_name + '_scale.csv', 'r') as f:
+                    reader = csv.reader(f, delimiter=',')
+                    for annot in reader:
+                        x, y = annot
+                        if name not in self.scale_points:
+                            self.scale_points[name] = []
+                        self.scale_points[name].append((float(x), float(y)))
+                    f.close()
+
+
         for name in self.image_names:
             if name not in self.roi_points:
                 self.roi_points[name] = []
+            if name not in self.scale_points:
+                self.scale_points[name] = []
             if name not in self.annotations_rect:
                 self.annotations_rect[name] = set()
             if name not in self.negative_annotations_rect:
