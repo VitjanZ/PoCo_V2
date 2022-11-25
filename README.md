@@ -28,7 +28,7 @@ conda create --name poco python=3.7
 conda activate poco
 conda install -c conda-forge cudatoolkit=10.0 cudnn=7.6.0
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/
-python3.7 -m pip install tensorflow_gpu=1.14.0 keras==2.3.1 opencv-python==4.1.1.26 PyQt5==5.13.2 h5py==2.10.0
+python3.7 -m pip install tensorflow_gpu==1.14.0 keras==2.3.1 opencv-python==4.1.1.26 PyQt5==5.13.2 h5py==2.10.0 protobuf==3.20.0
 ```
 
 ### Windows Build
@@ -181,7 +181,7 @@ that part of the image will be taken into account when training or detecting obj
 
 #### Scale Tool
 The scale tool enables the annotation of real-life distance on the image with a line. If annotated, this enables the 
-approximate calculation of the object density. The user should annotate the distance of 1cm.
+approximate calculation of the object density. The user should annotate the distance of 5cm.
 
 
 #### Saving Data

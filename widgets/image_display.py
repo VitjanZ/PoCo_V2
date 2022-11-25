@@ -177,7 +177,7 @@ class GraphicsScene(QGraphicsScene):
             if len(self.annotation_manager.scale_points[self.image_name]) == 2:
                 x1, y1 = self.annotation_manager.scale_points[self.image_name][0]
                 x2, y2 = self.annotation_manager.scale_points[self.image_name][1]
-                line_length = ((x1-x2)**2 + (y1-y2)**2)**0.5
+                line_length = ((x1-x2)**2 + (y1-y2)**2)**0.5 * 0.2
                 polygon_surface_cm = polygon_surface / (line_length**2)
                 self.poly_label.setText("Surface of polygon (cm): " + str(polygon_surface_cm))
                 self.polygon_surface = polygon_surface_cm
@@ -212,7 +212,7 @@ class GraphicsScene(QGraphicsScene):
             if len(self.annotation_manager.roi_points[self.image_name]) > 2:
                 polygon_points = np.array(self.annotation_manager.roi_points[self.image_name])
                 polygon_surface = self.get_polygon_surface(polygon_points[:,0], polygon_points[:,1])
-                line_length = ((x1-x2)**2 + (y1-y2)**2)**0.5
+                line_length = ((x1-x2)**2 + (y1-y2)**2)**0.5 * 0.2
                 polygon_surface_cm = np.round(polygon_surface / (line_length**2),3)
                 self.poly_label.setText("Surface of polygon (cm): " + str(polygon_surface_cm))
                 self.polygon_surface = polygon_surface_cm

@@ -119,7 +119,7 @@ class annotation_manager():
                 if len(self.scale_points[k]) == 2 and len(self.roi_points[k]) != 0:
                     x1, y1 = self.scale_points[k][0]
                     x2, y2 = self.scale_points[k][1]
-                    line_length = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+                    line_length = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5 * 0.2
                     polygon_points = np.array(self.roi_points[k])
                     x = polygon_points[:, 0]
                     y = polygon_points[:, 1]
